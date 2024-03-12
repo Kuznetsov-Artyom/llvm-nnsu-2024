@@ -11,45 +11,8 @@ public:
   explicit PrintClassMembersVisitor(clang::ASTContext *context)
       : m_context(context) {}
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *declaration) {
-    if (declaration->isStruct()|| declaration->isClass()) {
-      outInfoUserType(declaration);
-
-      auto members = declaration->fields();
-
-      for (const auto &member : members) {
-        llvm::outs() << "|_ " << member->getNameAsString() << ' ';
-        llvm::outs() << '(' << getTypeString(member) << '|';
-        llvm::outs() << getAccessSpecifierAsString(member) << ")\n";
-      }
-
-      llvm::outs() << '\n';
-    }
+    declaration->dump();
     return true;
-  }
-
-private:
-  void outInfoUserType(clang::CXXRecordDecl *userType) {
-    llvm::outs() << userType->getNameAsString() << ' ';
-    llvm::outs() << (userType->isStruct() ? "(struct" : "(class");
-    llvm::outs() << (userType->isTemplated() ? "|template)" : ")") << '\n';
-  }
-
-  std::string getTypeString(const clang::FieldDecl *member) {
-    clang::QualType type = member->getType();
-    return type.getAsString();
-  }
-
-  std::string getAccessSpecifierAsString(const clang::FieldDecl *member) {
-    switch (member->getAccess()) {
-    case clang::AS_public:
-      return "public";
-    case clang::AS_protected:
-      return "protected";
-    case clang::AS_private:
-      return "private";
-    default:
-      return "unknown";
-    }
   }
 
 private:
@@ -84,4 +47,4 @@ public:
 } // namespace
 
 static clang::FrontendPluginRegistry::Add<PrintClassMembersAction>
-    X("pcm_plugin", "Prints all members of the class");
+    X("aai_plugin", "Adds the always_inline attribute to functions without conditions");
